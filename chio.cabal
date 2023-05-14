@@ -1,0 +1,147 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           chio
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/chio#readme>
+homepage:       https://github.com/githubuser/chio#readme
+bug-reports:    https://github.com/githubuser/chio/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2022 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/chio
+
+library
+  exposed-modules:
+      Backend.ARM.Branches
+      Backend.ARM.Call
+      Backend.ARM.Compile
+      Backend.ARM.Constants
+      Backend.ARM.Context.Allocator
+      Backend.ARM.Context.Context
+      Backend.ARM.Context.Frame.Build
+      Backend.ARM.Context.Frame.Frame
+      Backend.ARM.Context.Frame.Params
+      Backend.ARM.Context.Registers
+      Backend.ARM.Copy
+      Backend.ARM.Function
+      Backend.ARM.Operations
+      Backend.ARM.Print
+      Backend.ARM.Signals
+      Backend.ARM.Spec.DataSection
+      Backend.ARM.Spec.Instructions
+      Backend.ARM.Spec.Operations
+      Backend.ARM.Spec.Program
+      Backend.ARM.Spec.Registers
+      Backend.ARM.Spec.TextSection
+      Backend.ARM.Start
+      Backend.ARM.Temporals
+      Backend.ARM.Translator
+      Backend.ARM.TypeSizes
+      Backend.Backend
+      Backend.IR.Spec.Instructions
+      Backend.IR.Spec.Operand
+      Backend.IR.Translation.Bool.Assign
+      Backend.IR.Translation.Bool.Conditionals
+      Backend.IR.Translation.Bool.Encoding
+      Backend.IR.Translation.Expressions
+      Backend.IR.Translation.Function
+      Backend.IR.Translation.IR
+      Backend.IR.Translation.Statements
+      Backend.IR.Translator
+      Backend.Label
+      Compiler
+      Frontend.Frontend
+      Frontend.GenericAST
+      Frontend.Parser.AST
+      Frontend.Parser.Expr
+      Frontend.Parser.Function
+      Frontend.Parser.Parser
+      Frontend.Parser.Program
+      Frontend.Parser.Statement
+      Frontend.Parser.Type
+      Frontend.Semantic.Analizer
+      Frontend.Semantic.Analizer.MainChecker
+      Frontend.Semantic.Analizer.SubprogramChecker
+      Frontend.Semantic.Analizer.TypeChecker
+      Frontend.Semantic.Analysis
+      Frontend.Semantic.AST
+      Frontend.Semantic.Error.Errors
+      Frontend.Semantic.Error.Report
+      Frontend.Semantic.Report
+      Frontend.Semantic.State
+      Frontend.Semantic.Symbol.Scope
+      Frontend.Semantic.Symbol.Table
+      Frontend.Semantic.SymbolTable
+      Operations
+      Types
+  other-modules:
+      Paths_chio
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , errors
+    , hspec
+    , hspec-tables ==0.0.1
+    , megaparsec
+    , mtl
+    , parser-combinators
+    , transformers
+  default-language: Haskell2010
+
+executable chio-exe
+  main-is: Main.hs
+  other-modules:
+      Run
+      Paths_chio
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , chio
+    , containers
+    , errors
+    , hspec
+    , hspec-tables ==0.0.1
+    , megaparsec
+    , mtl
+    , parser-combinators
+    , transformers
+  default-language: Haskell2010
+
+test-suite chio-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      SyntaxSpec
+      Paths_chio
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , chio
+    , containers
+    , errors
+    , hspec
+    , hspec-tables ==0.0.1
+    , megaparsec
+    , mtl
+    , parser-combinators
+    , transformers
+  default-language: Haskell2010

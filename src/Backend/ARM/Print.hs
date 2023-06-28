@@ -15,7 +15,7 @@ import           Backend.ARM.Translator (Translator, asm)
 import           Backend.ARM.Spec.Registers
 import qualified Backend.ARM.Spec.Instructions as ARM
 import           Backend.ARM.Signals (interrupt)
-import           Backend.ARM.Spec.Instructions (Instruction(HeadComment, B), Operand (Reg, ImmNum))
+import           Backend.ARM.Spec.Instructions (Instruction(HeadComment, BEQ), Operand (Reg, ImmNum))
 import           Backend.ARM.Temporals (operand, result)
 import           Backend.ARM.Spec.Operations (writeOption, stdout)
 import           Backend.ARM.Function (grantControlTo, returnControl)
@@ -43,7 +43,7 @@ printFunc = do
     asm $ ARM.Mov R1 (Reg R0) (Label "_print")
     asm $ ARM.LoadByte R2 (ARM.Direct R1) (Label "_pstrt")
     asm $ ARM.Cmp R2 (ARM.ImmNum 0) nolabel
-    asm $ B "_pend"
+    asm $ BEQ "_pend"
     asm $ ARM.Arith ARM.Add R1 R1 (ImmNum 1) nolabel
     branchTo "_pstrt"
     asm $ ARM.Arith ARM.Sub R3 R1 (Reg R0) (Label "_pend")

@@ -13,10 +13,13 @@ import           Backend.IR.Spec.Operand
 import           Backend.IR.Spec.Instructions (Operation(Copy))
 import           Backend.IR.Translation.Bool.Conditionals (andCtx)
 import           Backend.IR.Translation.Bool.Assign
-import           Backend.IR.Translation.Expressions
+import Backend.IR.Translation.Expressions ( eval )
 
 translate :: TypedStatement -> Translator ()
 translate (If cond then_ _) = do
+    prevThen <- getMidLabel
+    prevEnd  <- getEndLabel
+
     thenL <- getLabel
     endL  <- getLabel
 
@@ -27,7 +30,12 @@ translate (If cond then_ _) = do
     traverse_ translate then_
     point endL
 
+    setLabels prevThen prevEnd
+
 translate (IfElse cond then_ else_ _) = do
+    prevThen <- getMidLabel
+    prevEnd  <- getEndLabel
+
     thenL <- getLabel
     elseL <- getLabel
     endL  <- getLabel
@@ -41,8 +49,13 @@ translate (IfElse cond then_ else_ _) = do
     point elseL
     traverse_ translate else_
     point endL
+
+    setLabels prevThen prevEnd
     
 translate (While cond then_ _) = do
+    prevThen <- getMidLabel
+    prevEnd  <- getEndLabel
+
     test_ <- getLabel
     loopL <- getLabel
     endL  <- getLabel
@@ -59,6 +72,8 @@ translate (While cond then_ _) = do
     jumpTo loopL
     point endL        
 
+    setLabels prevThen prevEnd
+    
 translate (Var name type_ expr _) = do
     exprTemp <- eval expr
 

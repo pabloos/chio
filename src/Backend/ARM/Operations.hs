@@ -47,7 +47,7 @@ comp2Int label t1 (IR.Number int) = do
 
     asm $ Cmp r0 (ImmNum int) label
 
-ir2asm :: ArithOperation -> ARM.AlgOp
+ir2asm :: ArithOperation -> ARM.ArithOp
 ir2asm Operations.Add = ARM.Add
 ir2asm Operations.Sub = ARM.Sub
 ir2asm Operations.Mul = ARM.Mul

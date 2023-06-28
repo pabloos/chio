@@ -8,7 +8,7 @@ import Frontend.GenericAST (Param (name))
 import qualified Backend.IR.Spec.Instructions as IR
 import Backend.IR.Spec.Instructions ( Operation(CallRet, Call, Print), )
 import Backend.ARM.Translator (Translator, asm)
-import Backend.ARM.Spec.Instructions (Instruction (..), AlgOp (Add, Sub), Operand (ImmNum), MemSource (Index))
+import Backend.ARM.Spec.Instructions (Instruction (..), ArithOp (Add, Sub), Operand (ImmNum), MemSource (Index))
 import Backend.ARM.Context.Frame.Frame (Parameter(Pos, Reg), size)
 import Backend.Label (nolabel, Label (Label))
 import Backend.ARM.Context.Allocator (getSymbolPos, getFrame)

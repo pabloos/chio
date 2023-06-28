@@ -23,7 +23,7 @@ import           Backend.IR.Spec.Instructions (Instruction(Instruction, op))
 
 buildFrame :: IR.Function -> Frame
 buildFrame (ret, _, params, stmts) = do
-    let (paramsRes, index) = buildParams params
+    let (paramsRes, index) = allocParams params
 
     let retLen = if isJust ret then 4 else 0
 
@@ -53,8 +53,8 @@ getVars' index (Instruction{ op = IR.Var name type_}:stmts) = do
 getVars' index (_:stmts) = getVars' index stmts
 getVars' index [] = (index, Map.empty)
 
-buildParams :: [Param] -> (Parameters, Int)
-buildParams params = do
+allocParams :: [Param] -> (Parameters, Int)
+allocParams params = do
     let regParams = zip (map name params) [Reg R4, Reg R5, Reg R6, Reg R8] -- ARM: the first 4 args use to be passed through registers
 
     if length params <= 4 then (Map.fromList regParams, 0) else do -- if there's more args use memory

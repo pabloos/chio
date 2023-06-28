@@ -10,9 +10,9 @@ import Backend.Label
 import Backend.ARM.Spec.Registers (Register)
 import Data.List (intercalate)
 
-data AlgOp = Add | Sub | Mul deriving (Eq)
+data ArithOp = Add | Sub | Mul deriving (Eq)
 
-instance Show AlgOp where
+instance Show ArithOp where
     show Add = "add"
     show Sub = "sub"
     show Mul = "mul"
@@ -33,7 +33,7 @@ data Instruction = HeadComment String
                 | Load Register MemSource Label
                 | LoadByte Register MemSource Label
                 | Store Register MemSource Label
-                | Arith AlgOp Register Register Operand Label
+                | Arith ArithOp Register Register Operand Label
                 | Cmp Register Operand Label
                 | Push [Register]
                 | Pop [Register]

@@ -21,7 +21,7 @@ import           Backend.IR.Translation.Expressions
 andCtx, orCtx :: TypedExpr -> Translator ()
 andCtx (Lit (BoolVal True)) = return ()
 andCtx (Lit (BoolVal False)) = getEndLabel >>= jumpTo
-andCtx (Not expr) = orCtx expr
+andCtx (Not expr) = flipLabels >> orCtx expr >> flipLabels
 andCtx (Logic And left right) = andCtx left >> andCtx right
 andCtx (Logic Or left right) = orCtx left >> andCtx right
 andCtx (Comp op left right) = do
@@ -42,7 +42,7 @@ andCtx expr = do
 
 orCtx (Lit (BoolVal True)) = getMidLabel >>= jumpTo
 orCtx (Lit (BoolVal False)) = return ()
-orCtx (Not expr) = andCtx expr
+orCtx (Not expr) = flipLabels >> andCtx expr >> flipLabels
 orCtx (Logic And left right) = andCtx left >> andCtx right
 orCtx (Logic Or left right) = orCtx left >> andCtx right
 orCtx (Comp op left right) = do
@@ -60,3 +60,10 @@ orCtx expr = do
     
     unlabeled $ Compare temp (Number 1) nolabel
     unlabeled $ JumpIf Eq mid
+
+flipLabels :: Translator ()
+flipLabels = do
+    thenL <- getMidLabel
+    endL  <- getEndLabel
+
+    setLabels endL thenL

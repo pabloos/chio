@@ -12,58 +12,58 @@ import           Frontend.GenericAST
 import           Frontend.Semantic.AST
 import           Backend.Label
 import           Backend.IR.Translator
-import           Backend.IR.Spec.Operand
 import qualified Backend.IR.Spec.Instructions as IR
 import           Backend.IR.Spec.Instructions (Operation(Compare, JumpIf, Jump))
 import           Backend.IR.Translation.Expressions
+import           Backend.IR.Translation.Bool.Encoding (true)
 
--- shorcicuit
-andCtx, orCtx :: TypedExpr -> Translator ()
-andCtx (Lit (BoolVal True)) = return ()
-andCtx (Lit (BoolVal False)) = getEndLabel >>= jumpTo
-andCtx (Not expr) = flipLabels >> orCtx expr >> flipLabels
-andCtx (Logic And left right) = andCtx left >> andCtx right
-andCtx (Logic Or left right) = orCtx left >> andCtx right
-andCtx (Comp op left right) = do
+check :: TypedExpr -> Translator ()
+check (Logic And l r) = conjuntion l >> conjuntion r -- both must be true
+check (Logic Or  l r) = disjuntion l >> conjuntion r -- if the first fails, second must be true
+check cond            = conjuntion cond
+
+conjuntion, disjuntion :: TypedExpr -> Translator ()    -- ∧, ∨
+conjuntion (Lit (BoolVal True))  = return ()            -- static true: skip check
+conjuntion (Lit (BoolVal False)) = jumpTo =<< elseLabel -- static false: jump to end
+conjuntion (Not expr)            = swapLabels >> disjuntion expr >> swapLabels -- flip labels and op
+conjuntion (Comp op left right)  = do
     e1 <- eval left
     e2 <- eval right
 
-    end <- getEndLabel
+    elseL <- elseLabel
     
     unlabeled $ Compare e1 e2 nolabel
-    unlabeled $ JumpIf (inverse op) end
-        
-andCtx expr = do
+    unlabeled $ JumpIf (inverse op) elseL
+
+conjuntion expr = do
     temp <- eval expr
-    end <- getEndLabel
+    elseL <- elseLabel
 
-    unlabeled $ Compare temp (Number 1) nolabel
-    unlabeled $ JumpIf Ne end
+    unlabeled $ Compare temp true nolabel
+    unlabeled $ JumpIf Ne elseL
 
-orCtx (Lit (BoolVal True)) = getMidLabel >>= jumpTo
-orCtx (Lit (BoolVal False)) = return ()
-orCtx (Not expr) = flipLabels >> andCtx expr >> flipLabels
-orCtx (Logic And left right) = andCtx left >> andCtx right
-orCtx (Logic Or left right) = orCtx left >> andCtx right
-orCtx (Comp op left right) = do
+disjuntion (Lit (BoolVal True))  = jumpTo =<< thenLabel -- static true: jump to body
+disjuntion (Lit (BoolVal False)) = return ()            -- static false: skip check
+disjuntion (Not expr)            = swapLabels >> conjuntion expr >> swapLabels -- flip labels and op
+disjuntion (Comp op left right)  = do
     e1 <- eval left
     e2 <- eval right
 
-    mid <- getMidLabel
+    then_ <- thenLabel
 
     unlabeled $ Compare e1 e2 nolabel
-    unlabeled $ JumpIf op mid
+    unlabeled $ JumpIf op then_
 
-orCtx expr = do
+disjuntion expr = do
     temp <- eval expr
-    mid <- getMidLabel
+    thenL <- thenLabel
     
-    unlabeled $ Compare temp (Number 1) nolabel
-    unlabeled $ JumpIf Eq mid
+    unlabeled $ Compare temp true nolabel
+    unlabeled $ JumpIf Eq thenL
 
-flipLabels :: Translator ()
-flipLabels = do
-    thenL <- getMidLabel
-    endL  <- getEndLabel
+swapLabels :: Translator ()
+swapLabels = do
+    thenL <- thenLabel
+    elseL <- elseLabel
 
-    setLabels endL thenL
+    setLabels elseL thenL

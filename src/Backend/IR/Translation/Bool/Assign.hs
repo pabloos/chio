@@ -22,7 +22,7 @@ boolAssign name expr = do
 
     setLabels trueL falseL
 
-    andCtx expr
+    check expr
 
     ir Instruction{ label = trueL, op = setTrue name}
     jumpTo endLabel

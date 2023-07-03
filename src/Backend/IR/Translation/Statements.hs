@@ -9,23 +9,23 @@ import           Frontend.GenericAST
 import           Frontend.Semantic.AST
 import qualified Backend.IR.Spec.Instructions as IR
 import           Backend.IR.Translator
-import           Backend.IR.Spec.Operand
+import           Backend.IR.Spec.Operand ( Operand(Symbol) )
 import           Backend.IR.Spec.Instructions (Operation(Copy))
-import           Backend.IR.Translation.Bool.Conditionals (andCtx)
+import           Backend.IR.Translation.Bool.Conditionals (check)
 import           Backend.IR.Translation.Bool.Assign
-import Backend.IR.Translation.Expressions ( eval )
+import           Backend.IR.Translation.Expressions ( eval )
 
 translate :: TypedStatement -> Translator ()
 translate (If cond then_ _) = do
-    prevThen <- getMidLabel
-    prevEnd  <- getEndLabel
+    prevThen <- thenLabel
+    prevEnd  <- elseLabel
 
     thenL <- getLabel
     endL  <- getLabel
 
     setLabels thenL endL
 
-    andCtx cond
+    check cond
     point thenL
     traverse_ translate then_
     point endL
@@ -33,8 +33,8 @@ translate (If cond then_ _) = do
     setLabels prevThen prevEnd
 
 translate (IfElse cond then_ else_ _) = do
-    prevThen <- getMidLabel
-    prevEnd  <- getEndLabel
+    prevThen <- thenLabel
+    prevEnd  <- elseLabel
 
     thenL <- getLabel
     elseL <- getLabel
@@ -42,7 +42,7 @@ translate (IfElse cond then_ else_ _) = do
 
     setLabels thenL elseL
 
-    andCtx cond
+    check cond
     point thenL
     traverse_ translate then_
     jumpTo endL
@@ -53,8 +53,8 @@ translate (IfElse cond then_ else_ _) = do
     setLabels prevThen prevEnd
     
 translate (While cond then_ _) = do
-    prevThen <- getMidLabel
-    prevEnd  <- getEndLabel
+    prevThen <- thenLabel
+    prevEnd  <- elseLabel
 
     test_ <- getLabel
     loopL <- getLabel
@@ -68,7 +68,7 @@ translate (While cond then_ _) = do
     traverse_ translate then_
 
     point test_
-    andCtx cond
+    check cond
     jumpTo loopL
     point endL        
 
@@ -89,8 +89,8 @@ translate (Assign name expr _) =
       SymbolRef _ BoolType -> boolAssign name expr
       Call _ _ BoolType -> boolAssign name expr
       _ -> do
-        exprTemp <- eval expr
-        unlabeled $ Copy (Symbol name (typeOf expr)) exprTemp
+        tmp <- eval expr
+        unlabeled $ Copy (Symbol name (typeOf expr)) tmp
 
 translate (Print expr _) = do
     exprTemp <- eval expr

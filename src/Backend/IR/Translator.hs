@@ -58,8 +58,8 @@ newTemp = do
 setLabels :: Label -> Label -> Translator ()
 setLabels mid end = lift $ modify (\ctx -> ctx{condLabels = (mid, end)})
 
-getMidLabel :: Translator Label
-getMidLabel = lift $ gets (condLabels >>> fst)
+thenLabel :: Translator Label
+thenLabel = lift $ gets (condLabels >>> fst)
 
-getEndLabel :: Translator Label
-getEndLabel = lift $ gets (condLabels >>> snd)
+elseLabel :: Translator Label
+elseLabel = lift $ gets (condLabels >>> snd)

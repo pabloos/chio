@@ -106,6 +106,19 @@ while = do
   body <- stmtBlock
   return $ While cond body offset
 
+for :: Parser [UntypedStatement]
+for = do
+  offset <- getOffset
+
+  reserved "for"
+  
+  pre   <- reserved "(" >> statement
+  cond  <- reserved ";" >> expr
+  pos   <- reserved ";" >> statement
+  stmts <- reserved ")" >> stmtBlock
+
+  return $ pre : [While cond (stmts ++ [pos]) offset] 
+
 {-
     {
         print("hello")

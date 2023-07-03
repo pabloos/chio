@@ -60,20 +60,20 @@ operatorTable =
     ]
   , [ InfixL (do
         pos <- getOffset
+        symbol ">="
+        return $ Comp Ge pos)
+    , InfixL (do
+        pos <- getOffset
+        symbol "<="
+        return $ Comp Le pos) 
+    , InfixL (do
+        pos <- getOffset
         symbol ">"
         return $ Comp Gt pos)
     , InfixL (do
         pos <- getOffset
         symbol "<"
         return $ Comp Lt pos)
-    , InfixL (do
-        pos <- getOffset
-        symbol "*"
-        return $ Comp Ge pos)
-    , InfixL (do
-        pos <- getOffset
-        symbol "*"
-        return $ Comp Le pos)
     ]
   , [ InfixL (do
         pos <- getOffset
